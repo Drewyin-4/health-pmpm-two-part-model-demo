@@ -1,130 +1,120 @@
-# Health PMPM Modeling with Two-Part Framework
+# Health PMPM Modeling Using a Two-Part Framework
 
-## Business context
-This project replicates a common health actuarial pricing workflow for estimating
-per-member-per-month (PMPM) costs in the presence of highly sparse utilization.
+## Business Context
+This project replicates a health actuarial pricing workflow for estimating
+per-member-per-month (PMPM) costs in the presence of highly sparse healthcare
+utilization.
 
-In healthcare data, a large proportion of members incur zero cost within a year,
-while a smaller subset generates positive expenditures.  
-This project applies a two-part modeling framework to separately model utilization
-and conditional cost severity, and then aggregates predictions to the PMPM level.
+In individual-level healthcare data, a large share of members incur zero
+medical cost over a year, while positive costs are highly skewed among a
+smaller subset.  
+This project applies a two-part modeling framework to separately model
+utilization behavior and conditional cost severity, and then aggregates
+predictions to the PMPM level.
 
-The workflow mirrors pricing-style analysis used in health insurance,
-Medicare Advantage, and population risk modeling.
+The overall structure mirrors workflows commonly used in health insurance
+pricing, Medicare Advantage analytics, and population risk modeling.
 
 ---
 
-## Data (high level)
-- Source type: public survey-style healthcare data (de-identified)
-- Observation unit: individual-year
-- Key variables:
-  - Demographics: age, sex, age band
+## Data (High-Level Overview)
+- Source type: public, de-identified survey-style healthcare data  
+- Observation unit: individual-year  
+- Key variable groups:
+  - Demographics: age, sex, age bands
   - Utilization indicator (any use vs. no use)
   - Annual healthcare cost
   - Derived PMPM cost
 - Optional survey weights are supported and evaluated diagnostically
 
-Raw data, variable mappings, and preprocessing logic are intentionally omitted.
+Raw data files, detailed variable mappings, and preprocessing logic are
+intentionally excluded from this repository.
 
 ---
 
-## Modeling framework
-A two-part model is used to handle zero-inflated healthcare costs:
+## Modeling Framework
 
-**Part 1 — Utilization**
+A two-part model is used to address zero-inflated healthcare cost data:
+
+### Part 1 — Utilization
 - Models the probability of any healthcare use
-- Binary outcome (use vs. no use)
-- Logistic regression with demographic predictors
+- Binary outcome with logistic regression
+- Predictors based on demographic characteristics
 
-**Part 2 — Positive cost severity**
-- Models annual cost conditional on having positive utilization
+### Part 2 — Positive Cost Severity
+- Models annual cost conditional on positive utilization
 - Gamma regression with log link
-- Fitted only on members with positive cost
+- Fitted only on observations with positive cost
 
-**Combination**
+### PMPM Aggregation
 - Expected annual cost = P(use) × E(cost | use)
 - PMPM estimate = Expected annual cost / 12
 
-This structure separates utilization behavior from cost intensity, which is
-standard in health actuarial modeling.
+This separation allows utilization behavior and cost intensity to be modeled
+independently, improving interpretability and stability in a pricing context.
 
 ---
 
-## Model development and comparison
-Multiple model specifications are evaluated to assess stability and fit, including:
+## Model Development and Comparison
+Multiple model specifications are evaluated to assess robustness and stability,
+including:
 - Baseline demographic models
-- Interaction terms
+- Interaction effects
 - Nonlinear age effects using spline-based specifications
 
-Models are compared using:
-- PMPM-level MAE and RMSE
-- R²-style diagnostics for utilization probability
-- Group-level comparisons by age band and sex
-- Calibration checks for predicted utilization probabilities
-
-The focus is on relative model behavior and interpretability rather than
-maximizing predictive performance.
+Models are compared using PMPM-level metrics (MAE, RMSE), utilization calibration,
+and subgroup stability by age band and sex.  
+Model selection emphasizes interpretability and pricing usability rather than
+pure predictive optimization.
 
 ---
 
-## Diagnostics and validation
-The workflow includes structured diagnostics to ensure model reasonableness:
+## Diagnostics and Validation
+The workflow includes structured diagnostics aligned with actuarial practice:
 - Distribution checks for costs, utilization, and predictions
-- Actual vs. predicted PMPM at aggregate and subgroup levels
-- Utilization calibration by prediction deciles
-- Sensitivity analysis for weighted vs. unweighted estimates
+- Aggregate and subgroup comparisons of actual vs. predicted PMPM
+- Calibration analysis for predicted utilization probabilities
+- Sensitivity checks for weighted vs. unweighted estimates
 
-These diagnostics are designed to replicate how an analyst would validate a
-pricing or forecasting model before downstream use.
+Diagnostics are designed to support model reasonableness and downstream pricing
+use, rather than academic model selection.
 
 ---
 
 ## Outputs
-Example outputs include:
+Selected summary tables are included to illustrate model behavior and PMPM-level
+results:
 - Aggregate PMPM actual vs. predicted summaries
 - PMPM comparisons by age band and sex
-- Utilization calibration tables
-- Model comparison metrics across specifications
+- Model comparison summaries across specifications
+- Utilization calibration by prediction deciles
 
-Only summarized outputs and visualizations are included in this repository.
+Only high-level outputs used for interpretation are included.
 
 ---
 
 ## Future Work
-
 This project adopts a two-part modeling framework primarily due to data
 availability constraints and interpretability considerations in a pricing
-context. Several natural extensions are identified for future exploration:
+context. Potential extensions include:
 
-- **Richer utilization definitions**  
-  Using pre-2020 MEPS event-level files to construct explicit visit-based or
-  service-level utilization measures, enabling alternative hurdle-style or
-  count-based specifications.
+- Constructing visit-based utilization measures using event-level data to
+  explore hurdle-style or count-based specifications
+- Evaluating zero-inflated or mixture models if a defensible structural-zero
+  subgroup can be identified (e.g., eligibility or access constraints)
+- Incorporating richer clinical covariates to assess whether additional model
+  complexity is supported by the data
+- Comparing more flexible models against simpler specifications under
+  business-oriented criteria such as stability and transparency
 
-- **Zero-inflated and mixture models**  
-  Evaluating zero-inflated or mixture models if a defensible structural-zero
-  subgroup can be identified (e.g., eligibility, access, or coverage constraints),
-  rather than treating all zeros as behavioral outcomes.
-
-- **Expanded covariate sets**  
-  Incorporating diagnosis indicators, chronic condition flags, or risk markers
-  to assess whether increased model complexity is supported by the data and
-  improves stability at the PMPM level.
-
-- **Model selection under business constraints**  
-  Comparing more flexible specifications against simpler models with an emphasis
-  on interpretability, stability, and downstream pricing usability, rather than
-  pure predictive performance.
-
-These extensions are intentionally deferred to maintain a transparent and
-pricing-oriented modeling framework at the current stage.
-
+These extensions are intentionally deferred to preserve a clear, pricing-focused
+baseline framework.
 
 ---
 
-## Notes on reproducibility
+## Notes on Reproducibility
 This repository focuses on modeling logic, workflow structure, and actuarial
 reasoning.
 
-Implementation details, full data preprocessing steps, and model tuning code
-are intentionally omitted to prevent direct replication.
+Implementation details, full preprocessing steps, and model code are
+intentionally omitted to prevent direct replication.
