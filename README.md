@@ -90,6 +90,38 @@ Only summarized outputs and visualizations are included in this repository.
 
 ---
 
+## Future Work
+
+This project adopts a two-part modeling framework primarily due to data
+availability constraints and interpretability considerations in a pricing
+context. Several natural extensions are identified for future exploration:
+
+- **Richer utilization definitions**  
+  Using pre-2020 MEPS event-level files to construct explicit visit-based or
+  service-level utilization measures, enabling alternative hurdle-style or
+  count-based specifications.
+
+- **Zero-inflated and mixture models**  
+  Evaluating zero-inflated or mixture models if a defensible structural-zero
+  subgroup can be identified (e.g., eligibility, access, or coverage constraints),
+  rather than treating all zeros as behavioral outcomes.
+
+- **Expanded covariate sets**  
+  Incorporating diagnosis indicators, chronic condition flags, or risk markers
+  to assess whether increased model complexity is supported by the data and
+  improves stability at the PMPM level.
+
+- **Model selection under business constraints**  
+  Comparing more flexible specifications against simpler models with an emphasis
+  on interpretability, stability, and downstream pricing usability, rather than
+  pure predictive performance.
+
+These extensions are intentionally deferred to maintain a transparent and
+pricing-oriented modeling framework at the current stage.
+
+
+---
+
 ## Notes on reproducibility
 This repository focuses on modeling logic, workflow structure, and actuarial
 reasoning.
