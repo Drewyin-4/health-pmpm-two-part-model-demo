@@ -1,0 +1,5 @@
+# Safety for public showcase repo
+*.R
+*prediction*
+*coeff*
+data/
